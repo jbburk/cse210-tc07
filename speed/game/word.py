@@ -21,10 +21,11 @@ class Word(Actor):
             self (Actor): an instance of Actor.
         """
         super().__init__()
-        self._points = 0
-        self.set_text("-Buffer: ")
-        # self.set_text("@")
-        self.reset()
+        self.points = 50
+        self.set_text("-Word: ")
+        self.set_position(Point(0,constants.MAX_Y))
+        
+        #self.reset()
     
     def get_points(self):
         """Gets the points this word is worth.

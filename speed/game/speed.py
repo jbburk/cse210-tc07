@@ -1,8 +1,9 @@
 from game import constants
 from game.actor import Actor
 from game.point import Point
+import random
 
-class Snake:
+class Speed:
     """A limbless reptile. The responsibility of Snake is keep track of its segments. It contains methods for moving and growing among others.
 
     Stereotype:
@@ -18,9 +19,46 @@ class Snake:
             self (Snake): An instance of snake.
         """
         super().__init__()
-        self._segments = []
-        self._prepare_body()
-    
+        self._words = []
+        self.master_word_list = constants.LIBRARY
+        self.word_list = []
+        for _ in range(0,5):
+            self.word_list.append(self.master_word_list[random.randint(0,len(self.master_word_list))])
+        
+
+        for item in range(0,len(self.word_list)):
+            self.create_new_word(self.word_list[item])
+        
+    def create_new_word(self,word):
+        new_word = Actor()
+        new_word.set_text(word)
+        new_word.set_position(Point(random.randint(0,constants.MAX_X),random.randint(0,constants.MAX_Y-5)))
+        new_word.set_velocity(Point(0,1))
+        self._words.append(new_word)
+        
+        
+        
+
+    def move_words(self):
+        for item in self._words:
+            item.move_next()
+
+    def check_word(self,word):
+        points = len(word * 10)
+        if word in self.word_list:
+            index = self.word_list.index(word)
+            self._words.pop(index)
+            self.word_list.pop(index)
+            
+            new_word_text = self.master_word_list[random.randint(0,len(self.master_word_list))]
+            self.word_list.append(new_word_text)
+            self.create_new_word(new_word_text)
+            
+            return True, points
+        else:
+            
+            return False, points
+
     def get_all(self):
         """Gets all the snake's segments.
         
@@ -30,7 +68,7 @@ class Snake:
         Returns:
             list: The snake's segments.
         """
-        return self._segments
+        return self._words
 
     def get_body(self):
         """Gets the snake's body.
@@ -43,16 +81,7 @@ class Snake:
         """
         return self._segments[1:]
 
-    def get_head(self):
-        """Gets the snake's head.
-        
-        Args:
-            self (Snake): An instance of snake.
-
-        Returns:
-            Actor: The snake's head.
-        """
-        return self._segments[0]
+    
 
     def grow_tail(self):
         """Grows the snake's tail by one segment.

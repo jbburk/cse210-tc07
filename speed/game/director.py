@@ -25,13 +25,19 @@ class Director:
         
         Args:
             self (Director): an instance of Director.
+
+
         """
+
         self._word = Word()
         self._input_service = input_service
         self._keep_playing = True
         self._output_service = output_service
         self._score = Score()
         self._speed = Speed()
+
+
+        self.current_entry = ""
         
     def start_game(self):
         """Starts the game loop to control the sequence of play.
@@ -45,6 +51,8 @@ class Director:
             self._do_outputs()
             sleep(constants.FRAME_LENGTH)
 
+        print("ok you won! Go away now")
+
     def _get_inputs(self):
         """Gets the inputs at the beginning of each round of play. In this case,
         that means getting the desired direction and moving the speed.
@@ -52,8 +60,10 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        direction = self._input_service.get_direction()
-        self._speed.move_head(direction)
+        
+
+        self.letter = self._input_service.get_letter()
+
 
     def _do_updates(self):
         """Updates the important game information for each round of play. In 
@@ -62,9 +72,30 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        self._handle_body_collision()
-        self._handle_food_collision()
+        if self.letter == "*":
+            #check the word and clear
+            is_word_correct,points = self._speed.check_word(self.current_entry)
+            if is_word_correct:
+                self._score.add_points(points)
+            else:
+                self._score.subtract_points(points)
+            
+            self.current_entry = ""
+            self._word.set_text("Word: ")
+
+        else:
+            self.current_entry += self.letter
+            self._word.set_text(f"Word: {self.current_entry}")
         
+        if self.letter == "-":
+            if self.current_entry != "":
+                self.current_entry = self.current_entry[0:-2]
+                self._word.set_text(f"Word: {self.current_entry}")
+        
+
+        #self._handle_body_collision()
+        #self._handle_food_collision()
+        pass
     def _do_outputs(self):
         """Outputs the important game information for each round of play. In 
         this case, that means checking if there are stones left and declaring 
@@ -75,9 +106,17 @@ class Director:
         """
         self._output_service.clear_screen()
         self._output_service.draw_actor(self._word)
-        self._output_service.draw_actors(self._speed.get_all())
+        self._output_service.draw_actors(self._speed.get_all(),type="words")
         self._output_service.draw_actor(self._score)
+
+        self._speed.move_words()
+
         self._output_service.flush_buffer()
+
+        if self._score.get_score() >= 1000:
+            self._keep_playing = False
+
+
 
     def _handle_body_collision(self):
         """Handles collisions between the speed's head and body. Stops the game 

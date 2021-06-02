@@ -31,7 +31,7 @@ class OutputService:
         self._screen.print_at("-" * constants.MAX_X, 0, 0, 7)
         self._screen.print_at("-" * constants.MAX_X, 0, constants.MAX_Y, 7)
         
-    def draw_actor(self, actor):
+    def draw_actor(self, actor,type=None):
         """Renders the given actor's text on the screen.
 
         Args:
@@ -42,9 +42,14 @@ class OutputService:
         position = actor.get_position()
         x = position.get_x()
         y = position.get_y()
-        self._screen.print_at(text, x, y, 7) # WHITE
+        
+        color = 7
+        if type == "words":
+            color = 2
+            
+        self._screen.print_at(text, x, y, color) # WHITE
 
-    def draw_actors(self, actors):
+    def draw_actors(self, actors,type=None):
         """Renders the given list of actors on the screen.
 
         Args:
@@ -52,7 +57,7 @@ class OutputService:
             actors (list): The actors to render.
         """ 
         for actor in actors:
-            self.draw_actor(actor)
+            self.draw_actor(actor,type)
     
     def flush_buffer(self):
         """Renders the screen.

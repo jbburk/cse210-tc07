@@ -1,6 +1,7 @@
 import sys
 from asciimatics.event import KeyboardEvent
 
+
 class InputService:
     """Detects player input. The responsibility of the class of objects is to detect player keypresses and translate them into a point representing a direction (or velocity).
 
@@ -31,10 +32,15 @@ class InputService:
         result = ""
         event = self._screen.get_key()
         if not event is None:
+            
             if event == 27:
-                sys.exit()
-            elif event == 10: 
+                result="escape"
+                #sys.exit()
+            elif event == 13: 
                 result = "*"
+            elif event == -300:
+                result = "-"
+                #sys.exit()
             elif event >= 97 and event <= 122: 
                 result = chr(event)
         return result
